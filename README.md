@@ -1,6 +1,6 @@
 # decay
 
-Longitudinal compliance drift detector.
+Compliance doesn't fail suddenly. It drifts — coverage drops a few points, a finding recurs, a document goes unamended for two cycles. `decay` measures the drift.
 
 ```bash
 go get github.com/Formulary-Labs/decay
@@ -12,7 +12,7 @@ go get github.com/Formulary-Labs/decay
 
 `decay` does not interpret intent or assign blame. It flags measurements: coverage dropped 8 points, the same finding recurred in A.8, the SOA has not been amended in two cycles despite three new findings. What those measurements mean is left to the analyst.
 
-All patterns are deterministic. Same snapshots produce the same report on every run.
+Same snapshots in, same report out, every run.
 
 ## Input
 
