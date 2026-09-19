@@ -185,6 +185,7 @@ func Detect(from, to *ProgramSnapshot) DriftReport {
 
 	// 3.2 Finding and Remediation Anomalies.
 	r.Findings = append(r.Findings, detectNonDurableRemediation(from, to)...)
+	r.Findings = append(r.Findings, detectAcceleratedClosure(from, to)...)
 	r.Findings = append(r.Findings, detectFindingRateAnomaly(from, to)...)
 	r.Findings = append(r.Findings, detectRecurrentFinding(from, to)...)
 	r.Findings = append(r.Findings, detectRemediationLanguageDuplication(from, to)...)
@@ -323,6 +324,35 @@ func detectNonDurableRemediation(from, to *ProgramSnapshot) []Finding {
 		Severity:    High,
 		Description: fmt.Sprintf("%d finding(s) recurred in %s after being closed in %s", len(recurred), to.Cycle, from.Cycle),
 		Evidence:    recurred,
+	}}
+}
+
+func detectAcceleratedClosure(from, to *ProgramSnapshot) []Finding {
+	// Findings closed very quickly (within the same cycle they were opened).
+	// Threshold: opened and closed within the same cycle snapshot.
+	if len(to.Findings) == 0 {
+		return nil
+	}
+	var rapid []string
+	for _, f := range to.Findings {
+		if f.OpenedAt == nil || f.ClosedAt == nil {
+			continue
+		}
+		days := f.ClosedAt.Sub(*f.OpenedAt).Hours() / 24
+		if days >= 0 && days <= 7 {
+			rapid = append(rapid, fmt.Sprintf("%s closed in %.0fd (opened %s, closed %s)", f.ID, days, f.OpenedAt.Format("2006-01-02"), f.ClosedAt.Format("2006-01-02")))
+		}
+	}
+	_ = from
+	if len(rapid) == 0 {
+		return nil
+	}
+	return []Finding{{
+		PatternID:   AcceleratedClosure,
+		Severity:    Medium,
+		Description: fmt.Sprintf("%d finding(s) in %s were closed within 7 days of being opened — verify closures are substantive, not administrative", len(rapid), to.Cycle),
+		Evidence:    rapid,
+		Flags:       []string{"[INFERRED] — rapid closure may indicate genuine fix or documentation-only closure; review remediation evidence"},
 	}}
 }
 
