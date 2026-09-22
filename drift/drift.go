@@ -2,10 +2,11 @@
 //
 // Patterns are organised into four categories as defined in
 // functions/compliance-entropy-spec.md:
-//   3.1 Audit Coverage Anomalies  (4 patterns)
-//   3.2 Finding/Remediation       (5 patterns)
-//   3.3 Document Entropy          (3 patterns)
-//   3.4 Ownership                 (1 pattern)
+//
+//	3.1 Audit Coverage Anomalies  (4 patterns)
+//	3.2 Finding/Remediation       (5 patterns)
+//	3.3 Document Entropy          (3 patterns)
+//	3.4 Ownership                 (1 pattern)
 //
 // decay operates on two ProgramSnapshot values — a "from" and a "to" cycle —
 // and returns a DriftReport containing the findings for all triggered patterns.
@@ -26,12 +27,13 @@ import (
 // PatternID is one of the 13 named detection patterns.
 type PatternID string
 
+//nolint:revive // PatternID constants are self-documenting string identifiers.
 const (
 	// 3.1 Audit Coverage Anomalies
-	PersistentBlindSpot   PatternID = "PERSISTENT_BLIND_SPOT"
-	SampleConcentration   PatternID = "SAMPLE_CONCENTRATION"
-	CoverageRegression    PatternID = "COVERAGE_REGRESSION"
-	SOAAuditDivergence    PatternID = "SOA_AUDIT_DIVERGENCE"
+	PersistentBlindSpot PatternID = "PERSISTENT_BLIND_SPOT"
+	SampleConcentration PatternID = "SAMPLE_CONCENTRATION"
+	CoverageRegression  PatternID = "COVERAGE_REGRESSION"
+	SOAAuditDivergence  PatternID = "SOA_AUDIT_DIVERGENCE"
 
 	// 3.2 Finding and Remediation Anomalies
 	NonDurableRemediation          PatternID = "NON_DURABLE_REMEDIATION"
@@ -41,9 +43,9 @@ const (
 	RemediationLanguageDuplication PatternID = "REMEDIATION_LANGUAGE_DUPLICATION"
 
 	// 3.3 Document Entropy Anomalies
-	SOAStagnation             PatternID = "SOA_STAGNATION"
-	RiskAssessmentStagnation  PatternID = "RISK_ASSESSMENT_STAGNATION"
-	ExceptionAging            PatternID = "EXCEPTION_AGING"
+	SOAStagnation            PatternID = "SOA_STAGNATION"
+	RiskAssessmentStagnation PatternID = "RISK_ASSESSMENT_STAGNATION"
+	ExceptionAging           PatternID = "EXCEPTION_AGING"
 
 	// 3.4 Ownership Anomalies
 	OwnerConcentration PatternID = "OWNER_CONCENTRATION"
@@ -52,6 +54,7 @@ const (
 // Severity mirrors the spec severity levels.
 type Severity string
 
+//nolint:revive // Severity constants are self-documenting.
 const (
 	Critical Severity = "critical" // likely audit finding or cert failure
 	High     Severity = "high"     // auditor likely to flag
@@ -69,7 +72,7 @@ type Finding struct {
 }
 
 // DriftReport is the full output of a decay run.
-type DriftReport struct {
+type DriftReport struct { //nolint:revive // stutter is intentional for API clarity
 	FromCycle   string    `json:"from_cycle"`
 	ToCycle     string    `json:"to_cycle"`
 	GeneratedAt time.Time `json:"generated_at"`
@@ -84,7 +87,7 @@ type DriftReport struct {
 // It accepts the prompt-repo run JSON shape, plus fields decay adds for
 // longitudinal analysis (prior-cycle audit data).
 type ProgramSnapshot struct {
-	Cycle   string     `json:"cycle"`   // e.g. "2026-Q2"
+	Cycle   string     `json:"cycle"` // e.g. "2026-Q2"
 	RunDate *time.Time `json:"run_date,omitempty"`
 
 	// Control coverage.
@@ -111,28 +114,28 @@ type ProgramSnapshot struct {
 
 // CoverageSnapshot is point-in-time coverage percentages.
 type CoverageSnapshot struct {
-	EvidencedPct  float64 `json:"evidenced_pct"`
+	EvidencedPct   float64 `json:"evidenced_pct"`
 	ImplementedPct float64 `json:"implemented_pct"`
-	GapPct        float64 `json:"gap_pct"`
-	TotalControls int     `json:"total_controls"`
+	GapPct         float64 `json:"gap_pct"`
+	TotalControls  int     `json:"total_controls"`
 }
 
 // AuditFinding is a single finding from an audit cycle.
 type AuditFinding struct {
-	ID                  string    `json:"id"`
-	ControlFamily       string    `json:"control_family"`
-	Severity            string    `json:"severity"`
-	OpenedAt            *time.Time `json:"opened_at,omitempty"`
-	ClosedAt            *time.Time `json:"closed_at,omitempty"`
-	ReopenedAt          *time.Time `json:"reopened_at,omitempty"`
-	RemediationSummary  string    `json:"remediation_summary,omitempty"`
+	ID                 string     `json:"id"`
+	ControlFamily      string     `json:"control_family"`
+	Severity           string     `json:"severity"`
+	OpenedAt           *time.Time `json:"opened_at,omitempty"`
+	ClosedAt           *time.Time `json:"closed_at,omitempty"`
+	ReopenedAt         *time.Time `json:"reopened_at,omitempty"`
+	RemediationSummary string     `json:"remediation_summary,omitempty"`
 }
 
 // SOASnapshot captures SOA versioning metadata.
 type SOASnapshot struct {
-	Version     string     `json:"version,omitempty"`
-	LastAmended *time.Time `json:"last_amended,omitempty"`
-	ExceptionCount int     `json:"exception_count"`
+	Version        string     `json:"version,omitempty"`
+	LastAmended    *time.Time `json:"last_amended,omitempty"`
+	ExceptionCount int        `json:"exception_count"`
 }
 
 // RiskAssessmentSnapshot captures RA versioning metadata.
