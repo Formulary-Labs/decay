@@ -72,7 +72,7 @@ type Finding struct {
 }
 
 // DriftReport is the full output of a decay run.
-type DriftReport struct { //nolint:revive // stutter is intentional for API clarity
+type DriftReport struct { //nolint:revive // stutter is intentional
 	FromCycle   string    `json:"from_cycle"`
 	ToCycle     string    `json:"to_cycle"`
 	GeneratedAt time.Time `json:"generated_at"`
